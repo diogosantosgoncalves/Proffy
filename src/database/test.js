@@ -12,7 +12,7 @@ Database.then(async (db) => {
     bio: 'Apaixonado por tecnologia',
   }
   classValue = {
-    subject: "Química",
+    subject: "1",
     cost: "20",
   }
   classSchedulesValues = [
@@ -34,6 +34,22 @@ Database.then(async (db) => {
 
   // todos os proffys
 
+  const query = await db.all(`
+  SELECT classes.*, proffys.*
+  FROM proffys
+  JOIN classes ON (classes.proffy_id = proffys.id)
+  WHERE EXISTS(
+    SELECT class_schedule.*
+    FROM class_schedule
+    where class_schedule.class_id = "1"
+    AND class_schedule.weekday = "1"
+    AND class_schedule.time_from <= "720"
+    AND class_schedule.time_to > "720"
+  )
+  AND classes.subject = '1'
+`)
+  console.log(query)
+
   const selectedProffys = await db.all("SELECT * FROM class_schedule")
   //console.log(selectedProffys)
 
@@ -46,5 +62,20 @@ Database.then(async (db) => {
     JOIN classes ON (classes.proffy_id = proffys.id)
     WHERE classes.proffy_id = 1;
   `)
-  console.log(selectClassesAndProffys)
+  //console.log(selectClassesAndProffys)
+
+
+  // o horário que a pessoa trabalha, é das 08h - 18h
+  // 
+  //
+  const selectClassesSchedules = await db.all(`
+    SELECT class_schedule.*
+    FROM class_schedule
+    where class_schedule.class_id = "1"
+    AND class_schedule.weekday = "0"
+    AND class_schedule.time_from <= "520"
+    AND class_schedule.time_to > "520"
+  `)
+
+  //console.log(selectClassesSchedules)
 })
